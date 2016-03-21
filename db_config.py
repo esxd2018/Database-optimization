@@ -17,7 +17,7 @@ DB_HOST = 'localhost'
 DB_USER = 'root'
 
 # 数据库的链接密码
-DB_PASSWD = '******'
+DB_PASSWD = '260606'
 
 # 数据库的端口号
 DB_PORT = 3306

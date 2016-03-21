@@ -16,13 +16,13 @@ school_id INT(11) NOT NULL,  /* 学号 */
 name VARCHAR(30) NOT NULL, /* 姓名 */
 sex INT NOT NULL,  /* 性别 */
 age INT NOT NULL,  /* 年龄 */
-class_id INT NOT NULL,  /* 班级id */
+class_name INT NOT NULL,  /* 班级名称 */
 PRIMARY KEY (id)  /* 学生表主键 */
 );
 ```
 
 ```sql
-INSERT INTO student(school_id, name, sex, age, class_id) VALUES(100005, 'Bob', 1, 17, 1);
+INSERT INTO student(school_id, name, sex, age, class_name) VALUES(100005, 'Bob', 1, 17, 301);
 ```
 
 ### 班级表
@@ -30,7 +30,7 @@ INSERT INTO student(school_id, name, sex, age, class_id) VALUES(100005, 'Bob', 1
 ```sql
 CREATE TABLE class(
 id INT NOT NULL AUTO_INCREMENT, /* 班级表id */
-class_name VARCHAR(10) NOT NULL, /* 班级名称 */
+class_name INT NOT NULL, /* 班级名称 */
 master_id INT, /* 班长id */
 is_key INT NOT NULL, /* 是否重点班级 */
 PRIMARY KEY (id) /* 班级表主键 */
@@ -38,7 +38,7 @@ PRIMARY KEY (id) /* 班级表主键 */
 ```
 
 ```sql
-INSERT INTO class(class_name, master_id, is_key) VALUES('3-1', 1, 1);
+INSERT INTO class(class_name, master_id, is_key) VALUES(301, 1, 1);
 ```
 
 ### 课程表
@@ -47,6 +47,7 @@ INSERT INTO class(class_name, master_id, is_key) VALUES('3-1', 1, 1);
 CREATE TABLE course(
 id INT NOT NULL AUTO_INCREMENT, /* 课程表id */
 course_name VARCHAR(10) NOT NULL, /* 课程名称 */
+grade INT NOT NULL, /* 当前课程所属年级 */
 president_id INT, /* 课代表id */
 is_neces INT NOT NULL, /* 是否必修课 */
 credit INT NOT NULL, /* 学分 */
@@ -55,7 +56,11 @@ PRIMARY KEY (id) /* 课程表主键 */
 ```
 
 ```sql
-INSERT INTO course(course_name, president_id, is_neces, credit) VALUES('math', 1, 1, 4);
+INSERT INTO course(course_name, grade, president_id, is_neces, credit) VALUES('math', 3, 100214, 1, 4);
+```
+
+```sql
+ALTER table course ADD column class_name INT;
 ```
 
 ### 成绩表
@@ -74,24 +79,71 @@ PRIMARY KEY (id) /* 成绩表主键 */
 INSERT INTO score(course_id, school_id, score) VALUES(1, 100005, 88);
 ```
 
-## 数据表查询
+## 需求实战
 
+### 查询所有课程名称
 ```sql
-SELECT c.class_name, s.name FROM student s, class c WHERE s.class_id=c.id; /* 查询各个班级上的学生姓名 */
+SELECT course_name FROM course GROUP BY course_name;
+```
+
+### 查询一个学生全部课程
+```sql
+/* 子查询 */
+SELECT course_name FROM course WHERE id in (SELECT course_id FROM score WHERE school_id=100005);
+```
+
+### 统计每个班级有多少学生
+```sql
+SELECT class_name, count(*) FROM student GROUP BY class_name;
+```
+
+### 根据学号查询一个学生的成绩单
+```sql
+/* WHERE */
+SELECT st.name, co.course_name, sc.score
+FROM student st, score sc, course co
+WHERE sc.school_id=st.school_id
+AND co.id=sc.course_id
+AND st.school_id=100005;
 ```
 
 ```sql
-SELECT c.class_name, s.name FROM student s JOIN class c WHERE s.class_id=c.id; /* 查询各个班级上的学生姓名 */
+/* JOIN */
+SELECT st.name, co.course_name, sc.score
+FROM student st
+JOIN score sc ON sc.school_id=st.school_id
+JOIN course co ON co.id=sc.course_id
+WHERE st.school_id=100005;
+```
+
+### 查询各个班级的班长姓名
+```sql
+/* WHERE */
+SELECT cl.class_name, st.name
+FROM class cl, student st
+WHERE cl.master_id=st.school_id;
 ```
 
 ```sql
-SELECT * FROM student s CROSS JOIN class c; /* 查询student表和class表的笛卡尔积 */
+/* JOIN */
+SELECT cl.class_name, st.name
+FROM class cl
+JOIN student st
+ON cl.master_id=st.school_id;
 ```
 
 ```sql
-SELECT s.name, c.class_name FROM student s LEFT JOIN class c ON s.class_id=c.id;
+/* LEFT JOIN */
+SELECT cl.class_name, st.name
+FROM class cl
+LEFT JOIN student st
+ON cl.master_id=st.school_id;
 ```
 
 ```sql
-SELECT * FROM student s LEFT JOIN class c ON s.class_id;
+/* RIGHT JOIN */
+SELECT cl.class_name, st.name
+FROM student st
+RIGHT JOIN class cl
+ON cl.master_id=st.school_id;
 ```
