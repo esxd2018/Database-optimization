@@ -1,5 +1,8 @@
 # SQL语句表
 
+## 目录
+[TOC]
+
 ## 创建数据库
 ```sql
 CREATE DATABASE school;
@@ -79,7 +82,15 @@ PRIMARY KEY (id) /* 成绩表主键 */
 INSERT INTO score(course_id, school_id, score) VALUES(1, 100005, 88);
 ```
 
-## 需求实战
+## 导入导出
+```sql
+/* 导出数据库 */
+MYSQLDUMP -u root -p school > F:/Data/MySQL/school.sql
+/* 导入数据库 */
+SOURCE /root/upload/school.sql;
+```
+
+## 查询实战
 
 ### 查询所有课程名称
 ```sql
@@ -146,4 +157,11 @@ SELECT cl.class_name, st.name
 FROM student st
 RIGHT JOIN class cl
 ON cl.master_id=st.school_id;
+```
+
+### 其他查询
+```sql
+SELECT name, class_name FROM student GROUP BY class_name
+UNION ALL
+SELECT id, class_name FROM class;
 ```
