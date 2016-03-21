@@ -1,8 +1,5 @@
 # SQL语句表
 
-## 目录
-[TOC]
-
 ## 创建数据库
 ```sql
 CREATE DATABASE school;
@@ -160,6 +157,7 @@ ON cl.master_id=st.school_id;
 ```
 
 ### 其他查询
+
 ```sql
 SELECT name, class_name FROM student GROUP BY class_name
 UNION ALL
