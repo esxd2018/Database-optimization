@@ -38,7 +38,7 @@ PRIMARY KEY (id) /* 班级表主键 */
 ```
 
 ```sql
-INSERT INTO class(class_name, master_id, is_key) VALUES(301, 1, 1);
+INSERT INTO class(class_name, master_id, is_key) VALUES(301, 100001, 1);
 ```
 
 ### 课程表
@@ -87,6 +87,14 @@ MYSQLDUMP -u root -p school > F:/Data/MySQL/school.sql
 SOURCE /root/upload/school.sql;
 ```
 
+## 索引操作
+```sql
+/* 添加索引 */
+ALTER TABLE class ADD INDEX index_master_id (master_id);
+/* 删除索引 */
+DROP INDEX index_name ON talbe_name;
+```
+
 ## 查询实战
 
 ### 查询所有课程名称
@@ -121,15 +129,24 @@ SELECT st.name, co.course_name, sc.score
 FROM student st
 JOIN score sc ON sc.school_id=st.school_id
 JOIN course co ON co.id=sc.course_id
-WHERE st.school_id=100005;
+AND st.school_id=100005;
 ```
 
 ### 查询各个班级的班长姓名
+
 ```sql
 /* WHERE */
 SELECT cl.class_name, st.name
 FROM class cl, student st
 WHERE cl.master_id=st.school_id;
+```
+
+```sql
+/* 子查询 */
+SELECT st.class_name, st.name
+FROM student st
+WHERE st.school_id in
+(SELECT master_id FROM class);
 ```
 
 ```sql
